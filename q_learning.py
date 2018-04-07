@@ -70,11 +70,25 @@ class QLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
-    qlearning = QLearning(alpha=0)
+
+    qlearning = QLearning(epsilon=0)
     steps = qlearning.fit_threads(10)
     steps = np.array(steps)
     avg_steps = np.average(steps, axis=0)
     print(avg_steps.shape)
     print(avg_steps)
-    np.save("alpha0.npy", avg_steps)
-    print(np.load("alpha0.npy"))
+    np.save("epsilon0.npy", avg_steps)
+    print(np.load("epsilon0.npy"))
+    """
+    epsilons = [0.1, 0.25, 0.5, 1]
+    filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
+    for i in range(len(epsilons)):
+        qlearning = QLearning(epsilon=epsilons[i])
+        steps = qlearning.fit_threads(10)
+        steps = np.array(steps)
+        avg_steps = np.average(steps, axis=0)
+        print(avg_steps.shape)
+        print(avg_steps)
+        np.save(filenames[i], avg_steps)
+        print(np.load(filenames[i]))
+    """  

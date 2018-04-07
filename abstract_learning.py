@@ -152,15 +152,16 @@ class AbstractLearning(ABC):
             for j in range(self.size):
                 q_values_sum[i].append({"up": 0., "down": 0., "left": 0., "right": 0.})
         # sum all values
-        #steps = 0
+        steps = []
         for p in range(n_threads):
-            #steps += thread_q_values[p][1]
+            steps += thread_q_values[p][1]
+            #steps.append(thread_q_values[p][1])
             for q in range(self.size):
                 for r in range(self.size):
-                    q_values_sum[q][r]["up"] += thread_q_values[p][q][r]["up"]
-                    q_values_sum[q][r]["down"] += thread_q_values[p][q][r]["down"]
-                    q_values_sum[q][r]["left"] += thread_q_values[p][q][r]["left"]
-                    q_values_sum[q][r]["right"] += thread_q_values[p][q][r]["right"]
+                    q_values_sum[q][r]["up"] += thread_q_values[p][0][q][r]["up"]
+                    q_values_sum[q][r]["down"] += thread_q_values[p][0][q][r]["down"]
+                    q_values_sum[q][r]["left"] += thread_q_values[p][0][q][r]["left"]
+                    q_values_sum[q][r]["right"] += thread_q_values[p][0][q][r]["right"]
         # average all values
         for i in range(self.size):
             for j in range(self.size):
@@ -176,7 +177,7 @@ class AbstractLearning(ABC):
         self.update_policy()
 
         #rounded_steps = (int) (math.ceil(steps))
-        #return rounded_steps
+        return steps
 
     """
     Get the number of steps taken to reach the terminal state from the starting state.

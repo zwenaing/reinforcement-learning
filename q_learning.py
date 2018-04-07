@@ -13,10 +13,11 @@ class QLearning(AbstractLearning):
             for j in range(self.size):
                 q_values_sum[i].append({"up": 0., "down": 0., "left": 0., "right": 0.})
 
-        # steps = 0
+        steps = []
         for j in range(self.n_experiments):
+            print("Experiment: ", j)
             self.reset_q_states()
-            # steps += self.num_steps()
+            steps.append([])
             for i in range(self.n_episodes):
                 current_row = self.size - 1
                 current_col = 0
@@ -40,6 +41,9 @@ class QLearning(AbstractLearning):
                     self.q_values[current_row][current_col][max_action] = current_q_value + self.alpha * (new_q_value - current_q_value)
                     # update the current row
                     current_row, current_col = new_row, new_col
+                self.update_policy()
+                eps_steps = self.num_steps()
+                steps[j].append(eps_steps)
 
             for p in range(self.size):
                 for q in range(self.size):
@@ -57,7 +61,7 @@ class QLearning(AbstractLearning):
 
         # steps /= self.n_experiments
 
-        return self.q_values
+        return self.q_values, steps
 
     def f(self, n_exp):
         qlearning = QLearning(n_experiments=n_exp, size=self.size, discount_factor=self.discount_factor,
@@ -66,13 +70,11 @@ class QLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
-    steps = []
-    for eps in range(250):
-        qlearning = QLearning(n_episodes=eps, alpha=0.05)
-        qlearning.fit_threads(8)
-        steps_eps = qlearning.num_steps()
-        print("Episodes ", eps, " : ", steps_eps)
-        steps.append(steps_eps)
-
-    np.save("alpha005.npy", np.array(steps))
-    print(np.load("alpha005.npy"))
+    qlearning = QLearning(alpha=0)
+    steps = qlearning.fit_threads(10)
+    steps = np.array(steps)
+    avg_steps = np.average(steps, axis=0)
+    print(avg_steps.shape)
+    print(avg_steps)
+    np.save("alpha0.npy", avg_steps)
+    print(np.load("alpha0.npy"))

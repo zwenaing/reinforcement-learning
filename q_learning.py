@@ -1,11 +1,15 @@
 from abstract_learning import AbstractLearning
 import numpy as np
 
+
 class QLearning(AbstractLearning):
 
     def __init__(self, size=5, discount_factor=0.99, n_experiments=500, n_episodes=500, epsilon=0.1, alpha=0.1, random_seed=None):
         super(QLearning, self).__init__(size, discount_factor, n_experiments, n_episodes, epsilon, alpha, random_seed)
 
+    """
+    Train the algorithm using the given parameters.
+    """
     def fit(self):
         q_values_sum = []
         for i in range(self.size):
@@ -41,10 +45,11 @@ class QLearning(AbstractLearning):
                     self.q_values[current_row][current_col][max_action] = current_q_value + self.alpha * (new_q_value - current_q_value)
                     # update the current row
                     current_row, current_col = new_row, new_col
-                self.update_policy()
-                eps_steps = self.num_steps()
+                self.update_policy()    # update the policy
+                eps_steps = self.num_steps()    # get the number of steps to reach the goal
                 steps[j].append(eps_steps)
 
+            # keep a running sum of q values for all experiments
             for p in range(self.size):
                 for q in range(self.size):
                     q_values_sum[p][q]["up"] += self.q_values[p][q]["up"]
@@ -52,6 +57,7 @@ class QLearning(AbstractLearning):
                     q_values_sum[p][q]["left"] += self.q_values[p][q]["left"]
                     q_values_sum[p][q]["right"] += self.q_values[p][q]["right"]
 
+        # average the q values over all experiments
         for p in range(self.size):
             for q in range(self.size):
                 self.q_values[p][q]["up"] = q_values_sum[p][q]["up"] / self.n_experiments
@@ -59,10 +65,11 @@ class QLearning(AbstractLearning):
                 self.q_values[p][q]["left"] = q_values_sum[p][q]["left"] / self.n_experiments
                 self.q_values[p][q]["right"] = q_values_sum[p][q]["right"] / self.n_experiments
 
-        # steps /= self.n_experiments
-
         return self.q_values, steps
 
+    """
+    The method to pass to the process pool which trains the algorithm for the given number of experiments.
+    """
     def f(self, n_exp):
         qlearning = QLearning(n_experiments=n_exp, size=self.size, discount_factor=self.discount_factor,
                               n_episodes=self.n_episodes, epsilon=self.epsilon, alpha=self.alpha)
@@ -70,7 +77,6 @@ class QLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
-
     qlearning = QLearning(epsilon=0)
     steps = qlearning.fit_threads(10)
     steps = np.array(steps)

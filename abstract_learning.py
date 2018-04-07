@@ -155,7 +155,6 @@ class AbstractLearning(ABC):
         steps = []
         for p in range(n_threads):
             steps += thread_q_values[p][1]
-            #steps.append(thread_q_values[p][1])
             for q in range(self.size):
                 for r in range(self.size):
                     q_values_sum[q][r]["up"] += thread_q_values[p][0][q][r]["up"]
@@ -176,7 +175,6 @@ class AbstractLearning(ABC):
         # update the policy
         self.update_policy()
 
-        #rounded_steps = (int) (math.ceil(steps))
         return steps
 
     """

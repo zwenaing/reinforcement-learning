@@ -1,5 +1,6 @@
 from abstract_learning import AbstractLearning
 from multiprocessing import Pool
+import numpy as np
 
 
 class SarsaLearning(AbstractLearning):
@@ -29,10 +30,12 @@ class SarsaLearning(AbstractLearning):
             q_values_sum.append([])
             for j in range(self.size):
                 q_values_sum[i].append({"up": 0., "down": 0., "left": 0., "right": 0.})
-        steps = 0
+
+        steps = []
         for j in range(self.n_experiments):
+            print("Experiment: ", j)
             self.reset_q_states()
-            steps += self.num_steps()
+            steps.append([])
             for i in range(self.n_episodes):
                 self.reset_e_traces()
                 # initialize s and a
@@ -67,6 +70,11 @@ class SarsaLearning(AbstractLearning):
                     current_row, current_col = new_row, new_col
                     current_action = max_action
 
+                self.update_policy()  # update the policy
+                eps_steps = self.num_steps()  # get the number of steps to reach the goal
+                steps[j].append(eps_steps)
+
+            # keep a running sum of q values for all experiments
             for p in range(self.size):
                 for q in range(self.size):
                     q_values_sum[p][q]["up"] += self.q_values[p][q]["up"]
@@ -74,14 +82,13 @@ class SarsaLearning(AbstractLearning):
                     q_values_sum[p][q]["left"] += self.q_values[p][q]["left"]
                     q_values_sum[p][q]["right"] += self.q_values[p][q]["right"]
 
+        # average the q values over all experiments
         for p in range(self.size):
             for q in range(self.size):
                 self.q_values[p][q]["up"] = q_values_sum[p][q]["up"] / self.n_experiments
                 self.q_values[p][q]["down"] = q_values_sum[p][q]["down"] / self.n_experiments
                 self.q_values[p][q]["left"] = q_values_sum[p][q]["left"] / self.n_experiments
                 self.q_values[p][q]["right"] = q_values_sum[p][q]["right"] / self.n_experiments
-
-        steps /= self.n_experiments
 
         return self.q_values, steps
 
@@ -93,9 +100,23 @@ class SarsaLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
-    slearning = SarsaLearning(n_experiments=500, sarsa_lambda=0.5)
-    slearning.fit_threads(10)
+    alphas = [0., 0.01, 0.05, 0.1, 0.5, 1.0]
+    filenames = ["alpha0.npy", "alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
+    for i in range(len(alphas)):
+        slearning = SarsaLearning(alpha=alphas[i], n_experiments=10)
+        steps = slearning.fit_threads(10)
+        steps = np.array(steps)
+        avg_steps = np.average(steps, axis=0)
+        print(avg_steps.shape)
+        print(avg_steps)
+        np.save(filenames[i], avg_steps)
+        print("Save to ", filenames[i])
 
-    for i in range(slearning.size):
-        for j in range(slearning.size):
-            print("State ", str(i), " ", str(j), ": ", slearning.policy[i][j])
+
+
+    # slearning = SarsaLearning(n_experiments=500, sarsa_lambda=0.5)
+    # slearning.fit_threads(10)
+    #
+    # for i in range(slearning.size):
+    #     for j in range(slearning.size):
+    #         print("State ", str(i), " ", str(j), ": ", slearning.policy[i][j])

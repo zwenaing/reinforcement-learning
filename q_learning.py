@@ -18,10 +18,12 @@ class QLearning(AbstractLearning):
                 q_values_sum[i].append({"up": 0., "down": 0., "left": 0., "right": 0.})
 
         steps = []
+        max_start_qs = []
         for j in range(self.n_experiments):
             print("Experiment: ", j)
             self.reset_q_states()
-            steps.append([])
+            # steps.append([])
+            max_start_qs.append([])
             for i in range(self.n_episodes):
                 current_row = self.size - 1
                 current_col = 0
@@ -46,8 +48,9 @@ class QLearning(AbstractLearning):
                     # update the current row
                     current_row, current_col = new_row, new_col
                 self.update_policy()    # update the policy
-                eps_steps = self.num_steps()    # get the number of steps to reach the goal
-                steps[j].append(eps_steps)
+                # eps_steps = self.num_steps()    # get the number of steps to reach the goal
+                # steps[j].append(eps_steps)
+                max_start_qs[j].append(self.q_values[self.size - 1][0]["up"])
 
             # keep a running sum of q values for all experiments
             for p in range(self.size):
@@ -65,7 +68,8 @@ class QLearning(AbstractLearning):
                 self.q_values[p][q]["left"] = q_values_sum[p][q]["left"] / self.n_experiments
                 self.q_values[p][q]["right"] = q_values_sum[p][q]["right"] / self.n_experiments
 
-        return self.q_values, steps
+        return self.q_values, steps, max_start_qs
+        # return self.q_values,
 
     """
     The method to pass to the process pool which trains the algorithm for the given number of experiments.
@@ -77,24 +81,24 @@ class QLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
-    qlearning = QLearning(epsilon=0)
-    steps = qlearning.fit_threads(10)
-    steps = np.array(steps)
-    avg_steps = np.average(steps, axis=0)
-    print(avg_steps.shape)
-    print(avg_steps)
-    np.save("epsilon0.npy", avg_steps)
-    print(np.load("epsilon0.npy"))
-    """
+
+    alphas = [0.01, 0.05, 0.1, 0.5, 1.0]
+    filenames = ["alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
+    for i in range(len(alphas)):
+        qlearning = QLearning(alpha=alphas[i])
+        _, max_start_qs = qlearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])
+
     epsilons = [0.1, 0.25, 0.5, 1]
     filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
     for i in range(len(epsilons)):
         qlearning = QLearning(epsilon=epsilons[i])
-        steps = qlearning.fit_threads(10)
-        steps = np.array(steps)
-        avg_steps = np.average(steps, axis=0)
-        print(avg_steps.shape)
-        print(avg_steps)
-        np.save(filenames[i], avg_steps)
-        print(np.load(filenames[i]))
-    """  
+        _, max_start_qs = qlearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])
+

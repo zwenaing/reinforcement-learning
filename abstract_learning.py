@@ -31,7 +31,7 @@ class AbstractLearning(ABC):
         # all rewards are - 0.1 except the upper right corner where the reward is +5
         # initialize rewards for the state space
         self.rewards = [[- 0.1 for _ in range(self.size)] for _ in range(self.size)]
-        self.rewards[0][self.size - 1] = 5
+        self.rewards[0][self.size - 1] = 4.9
 
         # initialize all q-values to zeros
         self.q_values = []
@@ -153,8 +153,10 @@ class AbstractLearning(ABC):
                 q_values_sum[i].append({"up": 0., "down": 0., "left": 0., "right": 0.})
         # sum all values
         steps = []
+        max_start_qs = []
         for p in range(n_threads):
-            steps += thread_q_values[p][1]
+            #steps += thread_q_values[p][1]
+            max_start_qs += thread_q_values[p][2]
             for q in range(self.size):
                 for r in range(self.size):
                     q_values_sum[q][r]["up"] += thread_q_values[p][0][q][r]["up"]
@@ -175,7 +177,7 @@ class AbstractLearning(ABC):
         # update the policy
         self.update_policy()
 
-        return steps
+        return steps, max_start_qs
 
     """
     Get the number of steps taken to reach the terminal state from the starting state.

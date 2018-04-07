@@ -32,10 +32,12 @@ class SarsaLearning(AbstractLearning):
                 q_values_sum[i].append({"up": 0., "down": 0., "left": 0., "right": 0.})
 
         steps = []
+        max_start_qs = []
         for j in range(self.n_experiments):
             print("Experiment: ", j)
             self.reset_q_states()
-            steps.append([])
+            #steps.append([])
+            max_start_qs.append([])
             for i in range(self.n_episodes):
                 self.reset_e_traces()
                 # initialize s and a
@@ -71,8 +73,9 @@ class SarsaLearning(AbstractLearning):
                     current_action = max_action
 
                 self.update_policy()  # update the policy
-                eps_steps = self.num_steps()  # get the number of steps to reach the goal
-                steps[j].append(eps_steps)
+                # eps_steps = self.num_steps()  # get the number of steps to reach the goal
+                # steps[j].append(eps_steps)
+                max_start_qs[j].append(self.q_values[self.size - 1][0]["up"])
 
             # keep a running sum of q values for all experiments
             for p in range(self.size):
@@ -90,7 +93,7 @@ class SarsaLearning(AbstractLearning):
                 self.q_values[p][q]["left"] = q_values_sum[p][q]["left"] / self.n_experiments
                 self.q_values[p][q]["right"] = q_values_sum[p][q]["right"] / self.n_experiments
 
-        return self.q_values, steps
+        return self.q_values, steps, max_start_qs
 
     def f(self, n_exp):
         slearning = SarsaLearning(n_experiments=n_exp, sarsa_lambda=self.sarsa_lambda, size=self.size,
@@ -100,41 +103,33 @@ class SarsaLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
-    lambdas = [0., 0.25, 0.5, 0.75, 1.0]
-    filenames = ["lambda0.npy", "lambda025.npy", "lambda05.npy", "lambda075.npy", "lambda1.npy"]
-    for i in range(len(lambdas)):
-        slearning = SarsaLearning(sarsa_lambda=lambdas[i])
-        steps = slearning.fit_threads(20)
-        steps = np.array(steps)
-        avg_steps = np.average(steps, axis=0)
-        np.save(filenames[i], avg_steps)
-        print("Save to ", filenames[i])
-    """
+
     alphas = [0.01, 0.05, 0.1, 0.5, 1.0]
     filenames = ["alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
     for i in range(len(alphas)):
         slearning = SarsaLearning(alpha=alphas[i])
-        steps = slearning.fit_threads(10)
-        steps = np.array(steps)
-        avg_steps = np.average(steps, axis=0)
-        print(avg_steps.shape)
-        print(avg_steps)
-        np.save(filenames[i], avg_steps)
+        _, max_start_qs = slearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
         print("Save to ", filenames[i])
 
     epsilons = [0.1, 0.25, 0.5, 1.0]
     filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
     for i in range(len(epsilons)):
         slearning = SarsaLearning(epsilon=epsilons[i])
-        steps = slearning.fit_threads(10)
-        steps = np.array(steps)
-        avg_steps = np.average(steps, axis=0)
-        np.save(filenames[i], avg_steps)
+        _, max_start_qs = slearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
         print("Save to ", filenames[i])
-    """
-    # slearning = SarsaLearning(n_experiments=500, sarsa_lambda=0.5)
-    # slearning.fit_threads(10)
-    #
-    # for i in range(slearning.size):
-    #     for j in range(slearning.size):
-    #         print("State ", str(i), " ", str(j), ": ", slearning.policy[i][j])
+
+    lambdas = [0., 0.25, 0.5, 0.75, 1.0]
+    filenames = ["lambda0.npy", "lambda025.npy", "lambda05.npy", "lambda075.npy", "lambda1.npy"]
+    for i in range(len(lambdas)):
+        slearning = SarsaLearning(sarsa_lambda=lambdas[i])
+        _, max_start_qs = slearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])

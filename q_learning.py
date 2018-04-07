@@ -28,22 +28,22 @@ class QLearning(AbstractLearning):
                 current_row = self.size - 1
                 current_col = 0
                 while not (current_col == self.size - 1 and current_row == 0):
-                    # pi(s) = max Q-value(s, a)
+                    # pi(s_learning_startq) = max Q-value(s_learning_startq, a)
                     max_value, max_action = self.get_max_q_state(current_row, current_col)
-                    # T(s, a, s')
+                    # T(s_learning_startq, a, s_learning_startq')
                     max_action = self.get_action(max_action)
-                    # s'
+                    # s_learning_startq'
                     new_row, new_col = self.get_new_state(current_row, current_col, max_action)
-                    # R(s, a, s') reward obtained at the new state
+                    # R(s_learning_startq, a, s_learning_startq') reward obtained at the new state
                     reward = self.rewards[new_row][new_col]
-                    # Q(s, a)
+                    # Q(s_learning_startq, a)
                     q_value = self.q_values[current_row][current_col]
                     current_q_value = q_value[max_action]
-                    # max Q(s', a)
+                    # max Q(s_learning_startq', a)
                     next_max_value, next_max_action = self.get_max_q_state(new_row, new_col)
-                    # Q'(s, a) = R + gamma * max Q(s', a)
+                    # Q'(s_learning_startq, a) = R + gamma * max Q(s_learning_startq', a)
                     new_q_value = reward + (self.discount_factor * next_max_value)
-                    # Q(s, a) = Q(s, a) + alpha * (Q'(s,a) - Q(s,a))
+                    # Q(s_learning_startq, a) = Q(s_learning_startq, a) + alpha * (Q'(s_learning_startq,a) - Q(s_learning_startq,a))
                     self.q_values[current_row][current_col][max_action] = current_q_value + self.alpha * (new_q_value - current_q_value)
                     # update the current row
                     current_row, current_col = new_row, new_col
@@ -52,7 +52,7 @@ class QLearning(AbstractLearning):
                 # steps[j].append(eps_steps)
                 max_start_qs[j].append(self.q_values[self.size - 1][0]["up"])
 
-            # keep a running sum of q values for all experiments
+            # keep a running sum of q_learning_startq values for all experiments
             for p in range(self.size):
                 for q in range(self.size):
                     q_values_sum[p][q]["up"] += self.q_values[p][q]["up"]
@@ -60,7 +60,7 @@ class QLearning(AbstractLearning):
                     q_values_sum[p][q]["left"] += self.q_values[p][q]["left"]
                     q_values_sum[p][q]["right"] += self.q_values[p][q]["right"]
 
-        # average the q values over all experiments
+        # average the q_learning_startq values over all experiments
         for p in range(self.size):
             for q in range(self.size):
                 self.q_values[p][q]["up"] = q_values_sum[p][q]["up"] / self.n_experiments

@@ -40,13 +40,13 @@ class SarsaLearning(AbstractLearning):
             max_start_qs.append([])
             for i in range(self.n_episodes):
                 self.reset_e_traces()
-                # initialize s and a
+                # initialize s_learning_startq and a
                 current_row = self.size - 1
                 current_col = 0
                 current_action = "right"
 
                 while not (current_col == self.size - 1 and current_row == 0):
-                    # Observe s' and r
+                    # Observe s_learning_startq' and r
                     new_row, new_col = self.get_new_state(current_row, current_col, current_action)
                     reward = self.rewards[new_row][new_col]
 
@@ -77,7 +77,7 @@ class SarsaLearning(AbstractLearning):
                 # steps[j].append(eps_steps)
                 max_start_qs[j].append(self.q_values[self.size - 1][0]["up"])
 
-            # keep a running sum of q values for all experiments
+            # keep a running sum of q_learning_startq values for all experiments
             for p in range(self.size):
                 for q in range(self.size):
                     q_values_sum[p][q]["up"] += self.q_values[p][q]["up"]
@@ -85,7 +85,7 @@ class SarsaLearning(AbstractLearning):
                     q_values_sum[p][q]["left"] += self.q_values[p][q]["left"]
                     q_values_sum[p][q]["right"] += self.q_values[p][q]["right"]
 
-        # average the q values over all experiments
+        # average the q_learning_startq values over all experiments
         for p in range(self.size):
             for q in range(self.size):
                 self.q_values[p][q]["up"] = q_values_sum[p][q]["up"] / self.n_experiments

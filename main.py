@@ -7,11 +7,11 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(arguments, "h:alg:size:gamma:exps:epsilon:eps:alpha:lambda")
     except getopt.GetoptError:
-        print("main.py -alg <q or s> -size <size-of-grid> -gamma <discount-factor> -exps <number-of-experiments>"
+        print("main.py -alg <q_learning_startq or s_learning_startq> -size <size-of-grid> -gamma <discount-factor> -exps <number-of-experiments>"
               "-eps <number-of-epsisodes> -epsilon <epsilon-in-greedy-policy-execution> -alpha <learning-rate> "
               "-lambda <parameter-for-Sarsa>")
 
-    alg = 'q'
+    alg = 'q_learning_startq'
     size = 5
     gamma = 0.99
     exps = 500
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     for opt, arg in opts:
         if opt == "-h":
-            print("main.py -alg <q or s> -size <size-of-grid> -gamma <discount-factor> -exps <number-of-experiments>"
+            print("main.py -alg <q_learning_startq or s_learning_startq> -size <size-of-grid> -gamma <discount-factor> -exps <number-of-experiments>"
                   "-eps <number-of-epsisodes> -epsilon <epsilon-in-greedy-policy-execution> -alpha <learning-rate> "
                   "-lambda <parameter-for-Sarsa>")
         if opt == "-alg":
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         elif opt == "-lambda":
             sarsa_lambda = arg
 
-    if alg == "q":
+    if alg == "q_learning_startq":
         algorithm = QLearning(size, gamma, exps, eps, epsilon, alpha)
         algorithm.fit()
     # print(alg + " " + str(size) + " " + str(gamma) + " " + str(exps) + " " + str(eps) + " " +

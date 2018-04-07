@@ -33,7 +33,7 @@ class AbstractLearning(ABC):
         self.rewards = [[- 0.1 for _ in range(self.size)] for _ in range(self.size)]
         self.rewards[0][self.size - 1] = 4.9
 
-        # initialize all q-values to zeros
+        # initialize all q_learning_startq-values to zeros
         self.q_values = []
         for i in range(self.size):
             self.q_values.append([])
@@ -187,11 +187,11 @@ class AbstractLearning(ABC):
         current_row = self.size - 1
         current_col = 0
         while not (current_col == self.size - 1 and current_row == 0):
-            # pi(s) = max Q-value(s, a)
+            # pi(s_learning_startq) = max Q-value(s_learning_startq, a)
             max_value, max_action = self.get_max_q_state(current_row, current_col)
-            # T(s, a, s')
+            # T(s_learning_startq, a, s_learning_startq')
             max_action = self.get_action(max_action)
-            # s'
+            # s_learning_startq'
             new_row, new_col = self.get_new_state(current_row, current_col, max_action)
             # update the current row
             current_row, current_col = new_row, new_col

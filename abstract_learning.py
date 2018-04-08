@@ -155,7 +155,7 @@ class AbstractLearning(ABC):
         steps = []
         max_start_qs = []
         for p in range(n_threads):
-            #steps += thread_q_values[p][1]
+            steps += thread_q_values[p][1]
             max_start_qs += thread_q_values[p][2]
             for q in range(self.size):
                 for r in range(self.size):
@@ -171,7 +171,7 @@ class AbstractLearning(ABC):
                 q_values_sum[i][j]["left"] /= n_threads
                 q_values_sum[i][j]["right"] /= n_threads
 
-        #steps /= n_threads
+        steps /= n_threads
         # set Q values of the grid world
         self.set_q_values(q_values_sum)
         # update the policy

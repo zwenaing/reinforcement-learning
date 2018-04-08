@@ -80,30 +80,23 @@ class QLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
+    alphas = [0.01, 0.05, 0.1, 0.5, 1.0]
+    filenames = ["alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
+    for i in range(len(alphas)):
+        qlearning = QLearning(alpha=alphas[i])
+        _, max_start_qs = qlearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])
 
-    qlearning = QLearning(alpha=1.0, epsilon=0.5)
-    steps, max_start_qs = qlearning.fit_threads(10)
-    steps = np.array(steps)
-    avg_steps = np.average(steps, axis=0)
-    np.save("q10x10.npy", avg_steps)
-
-    # alphas = [0.01, 0.05, 0.1, 0.5, 1.0]
-    # filenames = ["alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
-    # for i in range(len(alphas)):
-    #     qlearning = QLearning(alpha=alphas[i])
-    #     _, max_start_qs = qlearning.fit_threads(10)
-    #     max_start_qs = np.array(max_start_qs)
-    #     max_qs = np.max(max_start_qs, axis=0)
-    #     np.save(filenames[i], max_qs)
-    #     print("Save to ", filenames[i])
-    #
-    # epsilons = [0.1, 0.25, 0.5, 1]
-    # filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
-    # for i in range(len(epsilons)):
-    #     qlearning = QLearning(epsilon=epsilons[i])
-    #     _, max_start_qs = qlearning.fit_threads(10)
-    #     max_start_qs = np.array(max_start_qs)
-    #     max_qs = np.max(max_start_qs, axis=0)
-    #     np.save(filenames[i], max_qs)
-    #     print("Save to ", filenames[i])
+    epsilons = [0.1, 0.25, 0.5, 1]
+    filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
+    for i in range(len(epsilons)):
+        qlearning = QLearning(epsilon=epsilons[i])
+        _, max_start_qs = qlearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])
 

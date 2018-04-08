@@ -103,39 +103,32 @@ class SarsaLearning(AbstractLearning):
 
 
 if __name__ == '__main__':
+    alphas = [0.01, 0.05, 0.1, 0.5, 1.0]
+    filenames = ["alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
+    for i in range(len(alphas)):
+        slearning = SarsaLearning(alpha=alphas[i])
+        _, max_start_qs = slearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])
 
-    slearning = SarsaLearning(alpha=0.1, epsilon=0.1, sarsa_lambda=0.5)
-    steps, max_start_qs = slearning.fit_threads(10)
-    steps = np.array(steps)
-    avg_steps = np.average(steps, axis=0)
-    np.save("s10x10.npy", avg_steps)
+    epsilons = [0.1, 0.25, 0.5, 1.0]
+    filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
+    for i in range(len(epsilons)):
+        slearning = SarsaLearning(epsilon=epsilons[i])
+        _, max_start_qs = slearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])
 
-    # alphas = [0.01, 0.05, 0.1, 0.5, 1.0]
-    # filenames = ["alpha001.npy", "alpha005.npy", "alpha01.npy", "alpha05.npy", "alpha1.npy"]
-    # for i in range(len(alphas)):
-    #     slearning = SarsaLearning(alpha=alphas[i])
-    #     _, max_start_qs = slearning.fit_threads(10)
-    #     max_start_qs = np.array(max_start_qs)
-    #     max_qs = np.max(max_start_qs, axis=0)
-    #     np.save(filenames[i], max_qs)
-    #     print("Save to ", filenames[i])
-    #
-    # epsilons = [0.1, 0.25, 0.5, 1.0]
-    # filenames = ["epsilon01.npy", "epsilon025.npy", "epsilon05.npy", "epsilon1.npy"]
-    # for i in range(len(epsilons)):
-    #     slearning = SarsaLearning(epsilon=epsilons[i])
-    #     _, max_start_qs = slearning.fit_threads(10)
-    #     max_start_qs = np.array(max_start_qs)
-    #     max_qs = np.max(max_start_qs, axis=0)
-    #     np.save(filenames[i], max_qs)
-    #     print("Save to ", filenames[i])
-
-    # lambdas = [0., 0.25, 0.5, 0.75, 1.0]
-    # filenames = ["lambda0.npy", "lambda025.npy", "lambda05.npy", "lambda075.npy", "lambda1.npy"]
-    # for i in range(len(lambdas)):
-    #     slearning = SarsaLearning(sarsa_lambda=lambdas[i])
-    #     _, max_start_qs = slearning.fit_threads(10)
-    #     max_start_qs = np.array(max_start_qs)
-    #     max_qs = np.max(max_start_qs, axis=0)
-    #     np.save(filenames[i], max_qs)
-    #     print("Save to ", filenames[i])
+    lambdas = [0., 0.25, 0.5, 0.75, 1.0]
+    filenames = ["lambda0.npy", "lambda025.npy", "lambda05.npy", "lambda075.npy", "lambda1.npy"]
+    for i in range(len(lambdas)):
+        slearning = SarsaLearning(sarsa_lambda=lambdas[i])
+        _, max_start_qs = slearning.fit_threads(10)
+        max_start_qs = np.array(max_start_qs)
+        max_qs = np.max(max_start_qs, axis=0)
+        np.save(filenames[i], max_qs)
+        print("Save to ", filenames[i])

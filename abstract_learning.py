@@ -31,7 +31,7 @@ class AbstractLearning(ABC):
         # all rewards are - 0.1 except the upper right corner where the reward is +5
         # initialize rewards for the state space
         self.rewards = [[- 0.1 for _ in range(self.size)] for _ in range(self.size)]
-        self.rewards[0][self.size - 1] = 4.9
+        self.rewards[0][self.size - 1] = 5.0
 
         # initialize all q_learning_startq-values to zeros
         self.q_values = []
@@ -171,7 +171,6 @@ class AbstractLearning(ABC):
                 q_values_sum[i][j]["left"] /= n_threads
                 q_values_sum[i][j]["right"] /= n_threads
 
-        steps /= n_threads
         # set Q values of the grid world
         self.set_q_values(q_values_sum)
         # update the policy
